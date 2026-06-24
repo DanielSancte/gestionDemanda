@@ -1,0 +1,22 @@
+{
+  "name": "gestion-de-la-demanda",
+  "version": "0.1.0",
+  "private": true,
+  "workspaces": [
+    "apps/*",
+    "services/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev": "concurrently \"npm run dev -w @gestion/web\" \"npm run dev -w @gestion/auth-service\" \"npm run dev -w @gestion/solicitudes-service\"",
+    "build": "npm run build -w @gestion/web",
+    "lint": "npm run lint -w @gestion/web",
+    "db:generate": "npm run db:generate -w @gestion/db",
+    "db:push": "npm run db:push -w @gestion/db",
+    "db:seed": "npm run db:seed -w @gestion/db",
+    "db:studio": "npm run db:studio -w @gestion/db"
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.2"
+  }
+}

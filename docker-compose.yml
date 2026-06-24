@@ -1,0 +1,22 @@
+services:
+  mysql:
+    image: mysql:8.4
+    container_name: gestion-demanda-mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: gestion_demanda
+      MYSQL_USER: gestion
+      MYSQL_PASSWORD: gestion_password
+      MYSQL_ROOT_PASSWORD: root_password
+    ports:
+      - "3307:3306"
+    volumes:
+      - gestion_demanda_mysql:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  gestion_demanda_mysql:
