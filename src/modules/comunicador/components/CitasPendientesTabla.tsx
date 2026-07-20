@@ -12,13 +12,14 @@ function abreviar(codigo: string): string {
     return codigo.length > 14 ? `${codigo.slice(0, 12)}…` : codigo;
 }
 
-export function CitasPendientesTabla({ filas, total, pagina, porPagina, onPagina, onGestionar }: {
+export function CitasPendientesTabla({ filas, total, pagina, porPagina, onPagina, onGestionar, renderAcciones }: {
     filas: CitaFila[];
     total: number;
     pagina: number;
     porPagina: number;
     onPagina: (p: number) => void;
     onGestionar: (cita: CitaFila) => void;
+    renderAcciones?: (cita: CitaFila) => React.ReactNode;
 }) {
     const totalPaginas = Math.max(1, Math.ceil(total / porPagina));
     return (
@@ -62,9 +63,12 @@ export function CitasPendientesTabla({ filas, total, pagina, porPagina, onPagina
                                         </Badge>
                                     </td>
                                     <td className="px-3 py-3">
-                                        <Button size="sm" onClick={() => onGestionar(c)}>
-                                            Llamar
-                                        </Button>
+                                        <div className="flex items-center gap-2">
+                                            <Button size="sm" onClick={() => onGestionar(c)}>
+                                                Llamar
+                                            </Button>
+                                            {renderAcciones?.(c)}
+                                        </div>
                                     </td>
                                 </tr>
                             ))

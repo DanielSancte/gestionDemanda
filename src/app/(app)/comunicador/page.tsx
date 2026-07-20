@@ -11,6 +11,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/sha
 import { CitasFiltros, CitasFiltrosUI, FILTROS_INICIALES } from "@/modules/comunicador/components/CitasFiltros";
 import { CitasPendientesTabla } from "@/modules/comunicador/components/CitasPendientesTabla";
 import { RegistrarLlamadaModal } from "@/modules/comunicador/components/RegistrarLlamadaModal";
+import { CitaAccionesMenu } from "@/modules/comunicador/components/CitaAccionesMenu";
+import { HistorialLlamadasModal } from "@/modules/comunicador/components/HistorialLlamadasModal";
 
 type Opciones = Awaited<ReturnType<typeof getFiltrosComunicador>>;
 
@@ -22,6 +24,7 @@ export default function ComunicadorPage() {
     const [data, setData] = useState<{ filas: CitaFila[]; total: number; pagina: number; porPagina: number }>({ filas: [], total: 0, pagina: 1, porPagina: 100 });
     const [citaSel, setCitaSel] = useState<CitaFila | null>(null);
     const [contacto, setContacto] = useState<{ telefonos: string; correo: string }>({ telefonos: "", correo: "" });
+    const [citaHistorial, setCitaHistorial] = useState<CitaFila | null>(null);
 
     useEffect(() => {
         getFiltrosComunicador().then(setOpciones).catch((e) => toast.error(e instanceof Error ? e.message : "Error al cargar filtros"));
@@ -100,6 +103,9 @@ export default function ComunicadorPage() {
                         porPagina={data.porPagina}
                         onPagina={setPagina}
                         onGestionar={abrirGestion}
+                        renderAcciones={(cita) => (
+                            <CitaAccionesMenu cita={cita} onVerHistorial={setCitaHistorial} />
+                        )}
                     />
                 </CardContent>
             </Card>
@@ -116,6 +122,10 @@ export default function ComunicadorPage() {
                         cargar();
                     }}
                 />
+            )}
+
+            {citaHistorial && (
+                <HistorialLlamadasModal citaId={citaHistorial.id_cita} onCerrar={() => setCitaHistorial(null)} />
             )}
         </div>
     );
