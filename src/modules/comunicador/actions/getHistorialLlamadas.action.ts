@@ -7,7 +7,7 @@ import { puedeAccederComunicador } from "@/shared/lib/access";
 import { AuditLogger } from "@/shared/lib/logger";
 
 export interface HistorialLlamada {
-    id_llamada: number;
+    id_llamada: string;
     fecha_llamada: Date | null;
     respuesta_usuario: string | null;
     observacion: string | null;

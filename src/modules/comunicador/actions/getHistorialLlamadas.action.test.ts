@@ -26,12 +26,12 @@ describe("getHistorialLlamadas", () => {
 
     it("mapea las llamadas y resuelve el nombre del comunicador", async () => {
         (prisma.llamada.findMany as any).mockResolvedValue([
-            { id_llamada: 2, fecha_llamada: new Date("2026-07-19T10:00:00"), respuesta_usuario: "No contesta", observacion: "no atiende", rut_comunicador: "5-5" }
+            { id_llamada: "LLAM-2", fecha_llamada: new Date("2026-07-19T10:00:00"), respuesta_usuario: "No contesta", observacion: "no atiende", rut_comunicador: "5-5" }
         ]);
         (prisma.funcionario.findMany as any).mockResolvedValue([{ rut: "5-5", nombre: "Ana" }]);
         const r = await getHistorialLlamadas("CITA-1");
         expect(r).toEqual([
-            { id_llamada: 2, fecha_llamada: new Date("2026-07-19T10:00:00"), respuesta_usuario: "No contesta", observacion: "no atiende", comunicador: "Ana" }
+            { id_llamada: "LLAM-2", fecha_llamada: new Date("2026-07-19T10:00:00"), respuesta_usuario: "No contesta", observacion: "no atiende", comunicador: "Ana" }
         ]);
     });
 
@@ -40,5 +40,25 @@ describe("getHistorialLlamadas", () => {
         (prisma.funcionario.findMany as any).mockResolvedValue([]);
         const r = await getHistorialLlamadas("CITA-1");
         expect(r).toEqual([]);
+    });
+
+    it("consulta filtrando por cita y ordenada por fecha_llamada desc", async () => {
+        (prisma.llamada.findMany as any).mockResolvedValue([]);
+        (prisma.funcionario.findMany as any).mockResolvedValue([]);
+        await getHistorialLlamadas("CITA-1");
+        const arg = (prisma.llamada.findMany as any).mock.calls[0][0];
+        expect(arg.where).toEqual({ cita_id: "CITA-1" });
+        expect(arg.orderBy).toEqual({ fecha_llamada: "desc" });
+    });
+
+    it("resuelve varios comunicadores y maneja rut nulo o no encontrado", async () => {
+        (prisma.llamada.findMany as any).mockResolvedValue([
+            { id_llamada: "LLAM-1", fecha_llamada: new Date("2026-07-19T10:00:00"), respuesta_usuario: "No contesta", observacion: null, rut_comunicador: "5-5" },
+            { id_llamada: "LLAM-2", fecha_llamada: new Date("2026-07-18T09:00:00"), respuesta_usuario: "No contesta", observacion: null, rut_comunicador: "9-9" },
+            { id_llamada: "LLAM-3", fecha_llamada: new Date("2026-07-17T08:00:00"), respuesta_usuario: "No contesta", observacion: null, rut_comunicador: null }
+        ]);
+        (prisma.funcionario.findMany as any).mockResolvedValue([{ rut: "5-5", nombre: "Ana" }]);
+        const r = await getHistorialLlamadas("CITA-1");
+        expect(r.map((x) => x.comunicador)).toEqual(["Ana", "9-9", null]);
     });
 });
