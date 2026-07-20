@@ -38,6 +38,8 @@ export default function ComunicadorPage() {
                 edadMax: aplicados.edadMax || undefined,
                 fechaDesde: aplicados.fechaDesde || undefined,
                 fechaHasta: aplicados.fechaHasta || undefined,
+                rut: aplicados.rut || undefined,
+                sector: aplicados.sector || undefined,
                 pagina
             });
             setData(r);
