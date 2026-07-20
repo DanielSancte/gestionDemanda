@@ -1,14 +1,15 @@
 "use client";
 
-import { History, MoreVertical } from "lucide-react";
+import { CalendarClock, History, MoreVertical } from "lucide-react";
 // components
 import { Button } from "@/shared/components/ui/button";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/shared/components/ui/dropdown-menu";
 import type { CitaFila } from "../actions/getCitasPendientes.action";
 
-export function CitaAccionesMenu({ cita, onVerHistorial }: {
+export function CitaAccionesMenu({ cita, onVerHistorial, onVerOtrasCitas }: {
     cita: CitaFila;
     onVerHistorial: (cita: CitaFila) => void;
+    onVerOtrasCitas: (cita: CitaFila) => void;
 }) {
     return (
         <DropdownMenu>
@@ -21,6 +22,10 @@ export function CitaAccionesMenu({ cita, onVerHistorial }: {
                 <DropdownMenuItem onSelect={() => onVerHistorial(cita)}>
                     <History size={14} />
                     Ver historial de llamadas
+                </DropdownMenuItem>
+                <DropdownMenuItem onSelect={() => onVerOtrasCitas(cita)}>
+                    <CalendarClock size={14} />
+                    Otras citas del paciente
                 </DropdownMenuItem>
             </DropdownMenuContent>
         </DropdownMenu>

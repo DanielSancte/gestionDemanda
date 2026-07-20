@@ -13,6 +13,7 @@ import { CitasPendientesTabla } from "@/modules/comunicador/components/CitasPend
 import { RegistrarLlamadaModal } from "@/modules/comunicador/components/RegistrarLlamadaModal";
 import { CitaAccionesMenu } from "@/modules/comunicador/components/CitaAccionesMenu";
 import { HistorialLlamadasModal } from "@/modules/comunicador/components/HistorialLlamadasModal";
+import { OtrasCitasPacienteModal } from "@/modules/comunicador/components/OtrasCitasPacienteModal";
 
 type Opciones = Awaited<ReturnType<typeof getFiltrosComunicador>>;
 
@@ -25,6 +26,7 @@ export default function ComunicadorPage() {
     const [citaSel, setCitaSel] = useState<CitaFila | null>(null);
     const [contacto, setContacto] = useState<{ telefonos: string; correo: string }>({ telefonos: "", correo: "" });
     const [citaHistorial, setCitaHistorial] = useState<CitaFila | null>(null);
+    const [citaOtras, setCitaOtras] = useState<CitaFila | null>(null);
 
     useEffect(() => {
         getFiltrosComunicador().then(setOpciones).catch((e) => toast.error(e instanceof Error ? e.message : "Error al cargar filtros"));
@@ -104,7 +106,7 @@ export default function ComunicadorPage() {
                         onPagina={setPagina}
                         onGestionar={abrirGestion}
                         renderAcciones={(cita) => (
-                            <CitaAccionesMenu cita={cita} onVerHistorial={setCitaHistorial} />
+                            <CitaAccionesMenu cita={cita} onVerHistorial={setCitaHistorial} onVerOtrasCitas={setCitaOtras} />
                         )}
                     />
                 </CardContent>
@@ -126,6 +128,10 @@ export default function ComunicadorPage() {
 
             {citaHistorial && (
                 <HistorialLlamadasModal citaId={citaHistorial.id_cita} onCerrar={() => setCitaHistorial(null)} />
+            )}
+
+            {citaOtras && (
+                <OtrasCitasPacienteModal rutUsuario={citaOtras.rut_usuario} citaActualId={citaOtras.id_cita} onCerrar={() => setCitaOtras(null)} />
             )}
         </div>
     );
