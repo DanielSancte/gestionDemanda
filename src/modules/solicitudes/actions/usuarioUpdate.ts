@@ -12,7 +12,7 @@ export interface ActorAuditoria {
     rut: string;
 }
 
-const USUARIO_SELECT = {
+export const USUARIO_SELECT = {
     rut: true,
     nombre: true,
     apellido: true,

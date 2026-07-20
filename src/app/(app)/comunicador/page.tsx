@@ -88,7 +88,7 @@ export default function ComunicadorPage() {
             <Card>
                 <CardHeader>
                     <CardTitle>Filtros</CardTitle>
-                    <CardDescription>Filtra por temporalidad, estado, profesión, prestación, edad y fecha estimada.</CardDescription>
+                    <CardDescription>Filtra por temporalidad, estado, profesión, prestación, edad, fecha estimada, RUT y sector.</CardDescription>
                 </CardHeader>
                 <CardContent>
                     <CitasFiltros

@@ -3,7 +3,8 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 vi.mock("@/shared/lib/prisma", () => ({
     prisma: {
         llamada: { findMany: vi.fn() },
-        funcionario: { findMany: vi.fn() }
+        funcionario: { findMany: vi.fn() },
+        cita: { findUnique: vi.fn() }
     }
 }));
 vi.mock("@/shared/lib/auth", () => ({ requireSessionUser: vi.fn() }));
@@ -16,6 +17,7 @@ import { requireSessionUser } from "@/shared/lib/auth";
 beforeEach(() => {
     vi.clearAllMocks();
     (requireSessionUser as any).mockResolvedValue({ rut: "1-9", email: "c@x.cl", nombre: "Com", centro_id: "501", rol: { id: 3, nombre: "Comunicador" }, menu: [] });
+    (prisma.cita.findUnique as any).mockResolvedValue({ centro_id: "501" });
 });
 
 describe("getHistorialLlamadas", () => {
@@ -60,5 +62,10 @@ describe("getHistorialLlamadas", () => {
         (prisma.funcionario.findMany as any).mockResolvedValue([{ rut: "5-5", nombre: "Ana" }]);
         const r = await getHistorialLlamadas("CITA-1");
         expect(r.map((x) => x.comunicador)).toEqual(["Ana", "9-9", null]);
+    });
+
+    it("rechaza una cita de otro centro", async () => {
+        (prisma.cita.findUnique as any).mockResolvedValue({ centro_id: "999" });
+        await expect(getHistorialLlamadas("CITA-X")).rejects.toThrow("La cita no pertenece a tu centro");
     });
 });

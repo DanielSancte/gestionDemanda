@@ -7,6 +7,8 @@ import { puedeAccederComunicador } from "@/shared/lib/access";
 import { AuditLogger } from "@/shared/lib/logger";
 // utils
 import { esRutChilenoValido, normalizarRut } from "@/modules/solicitudes/utils/rut";
+// actions
+import { USUARIO_SELECT } from "@/modules/solicitudes/actions/usuarioUpdate";
 
 export interface UsuarioEditable {
     rut: string;
@@ -35,22 +37,7 @@ export async function getUsuarioParaEdicion(rutUsuario: string): Promise<{ usuar
 
     const usuario = await prisma.usuario.findUnique({
         where: { rut },
-        select: {
-            rut: true,
-            nombre: true,
-            apellido: true,
-            nombre_social: true,
-            correo_contacto: true,
-            sector: true,
-            genero: true,
-            fecha_nacimiento: true,
-            telefono: true,
-            telefono_alternativo: true,
-            gestante: true,
-            discapacidad: true,
-            centro_id: true,
-            priorizacion_administrativa: true
-        }
+        select: USUARIO_SELECT
     });
 
     await AuditLogger.logDataAccess("SEARCH", true, { id: user.email, name: user.nombre, rut: user.rut }, `USUARIO_${rut}`, {

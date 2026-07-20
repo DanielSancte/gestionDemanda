@@ -53,7 +53,7 @@ export async function getCitasPendientes(filtros: unknown): Promise<{ filas: Cit
     // RUT: coincidencia parcial, ignorando puntos y guion en ambos lados.
     if (f.rut) {
         const fragmentoRut = f.rut.replace(/[.\-\s]/g, "");
-        condiciones.push(Prisma.sql`REPLACE(REPLACE(c.rut_usuario, '.', ''), '-', '') LIKE ${`%${fragmentoRut}%`}`);
+        if (fragmentoRut) condiciones.push(Prisma.sql`REPLACE(REPLACE(c.rut_usuario, '.', ''), '-', '') LIKE ${`%${fragmentoRut}%`}`);
     }
     // Sector: coincidencia parcial (texto libre).
     if (f.sector) condiciones.push(Prisma.sql`u.sector LIKE ${`%${f.sector}%`}`);

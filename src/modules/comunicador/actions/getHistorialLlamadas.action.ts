@@ -17,6 +17,10 @@ export interface HistorialLlamada {
 export async function getHistorialLlamadas(citaId: string): Promise<HistorialLlamada[]> {
     const user = await requireSessionUser();
     if (!puedeAccederComunicador(user.rol.nombre)) throw new Error("No tienes permiso para el comunicador");
+    if (!user.centro_id) throw new Error("El funcionario no tiene centro asignado");
+
+    const cita = await prisma.cita.findUnique({ where: { id_cita: citaId }, select: { centro_id: true } });
+    if (!cita || cita.centro_id !== user.centro_id) throw new Error("La cita no pertenece a tu centro");
 
     const llamadas = await prisma.llamada.findMany({
         where: { cita_id: citaId },

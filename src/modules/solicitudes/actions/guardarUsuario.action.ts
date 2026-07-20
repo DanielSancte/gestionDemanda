@@ -8,7 +8,7 @@ import { AuditLogger } from "@/shared/lib/logger";
 // schemas
 import { usuarioSolicitudSchema, UsuarioSolicitudInput } from "../schemas/usuario.schema";
 // actions (núcleo compartido)
-import { validarCentro, toUsuarioData, persistirActualizacionUsuario } from "./usuarioUpdate";
+import { validarCentro, toUsuarioData, persistirActualizacionUsuario, USUARIO_SELECT } from "./usuarioUpdate";
 
 async function requireSolicitudesUser() {
     const user = await requireSessionUser();
@@ -26,22 +26,7 @@ export async function crearUsuario(input: UsuarioSolicitudInput) {
 
     const usuario = await prisma.usuario.create({
         data: { rut: data.rut, ...toUsuarioData(data) },
-        select: {
-            rut: true,
-            nombre: true,
-            apellido: true,
-            nombre_social: true,
-            correo_contacto: true,
-            sector: true,
-            genero: true,
-            fecha_nacimiento: true,
-            telefono: true,
-            telefono_alternativo: true,
-            gestante: true,
-            discapacidad: true,
-            centro_id: true,
-            priorizacion_administrativa: true
-        }
+        select: USUARIO_SELECT
     });
 
     await AuditLogger.logDataAccess("CREATE", true, { id: user.email, name: user.nombre, rut: user.rut }, `USUARIO_${usuario.rut}`, {
