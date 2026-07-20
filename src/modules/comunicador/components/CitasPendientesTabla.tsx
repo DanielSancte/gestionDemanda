@@ -1,6 +1,8 @@
 "use client";
 
 import { AlertTriangle } from "lucide-react";
+// lib
+import { cn } from "@/shared/lib/utils";
 // components
 import { Badge } from "@/shared/components/ui/badge";
 import { Button } from "@/shared/components/ui/button";
@@ -45,7 +47,7 @@ export function CitasPendientesTabla({ filas, total, pagina, porPagina, onPagina
                             </tr>
                         ) : (
                             filas.map((c) => (
-                                <tr key={c.id_cita} className="border-t">
+                                <tr key={c.id_cita} className={cn("border-t", c.tiene_llamada_hoy && "bg-primary/5")}>
                                     <td className="px-3 py-3 font-medium" title={c.id_cita}>{abreviar(c.id_cita)}</td>
                                     <td className="px-3 py-3">{c.priorizacion ?? "—"}</td>
                                     <td className="px-3 py-3">{c.disponibilidad || "—"}</td>
