@@ -27,6 +27,7 @@ export interface CitaFila {
     fecha_estimada_atencion: Date | null;
     estado_cita: string | null;
     intentos: number;
+    tiene_llamada_hoy: boolean;
 }
 
 export async function getCitasPendientes(filtros: unknown): Promise<{ filas: CitaFila[]; total: number; pagina: number; porPagina: number }> {
@@ -91,7 +92,8 @@ export async function getCitasPendientes(filtros: unknown): Promise<{ filas: Cit
             pr.nombre_prestacion AS prestacion,
             c.fecha_estimada_atencion AS fecha_estimada_atencion,
             c.estado_cita AS estado_cita,
-            (SELECT COUNT(*) FROM llamadas ll WHERE ll.cita_id = c.id_cita AND ll.respuesta_usuario = ${RESPUESTA_LLAMADA.NO_CONTESTA}) AS intentos
+            (SELECT COUNT(*) FROM llamadas ll WHERE ll.cita_id = c.id_cita AND ll.respuesta_usuario = ${RESPUESTA_LLAMADA.NO_CONTESTA}) AS intentos,
+            EXISTS(SELECT 1 FROM llamadas lh WHERE lh.cita_id = c.id_cita AND DATE(lh.fecha_llamada) = CURDATE()) AS tiene_llamada_hoy
         FROM citas c
         JOIN usuarios u ON u.rut = c.rut_usuario
         JOIN solicitudes s ON s.id_solicitud = c.solicitud_id
@@ -116,6 +118,10 @@ export async function getCitasPendientes(filtros: unknown): Promise<{ filas: Cit
     });
 
     // `intentos` puede venir como bigint desde MySQL; normalizar a number.
-    const filasNorm = filas.map((r) => ({ ...r, intentos: Number(r.intentos as unknown as bigint) }));
+    const filasNorm = filas.map((r) => ({
+        ...r,
+        intentos: Number(r.intentos as unknown as bigint),
+        tiene_llamada_hoy: Number(r.tiene_llamada_hoy as unknown as number) === 1
+    }));
     return { filas: filasNorm, total, pagina: f.pagina, porPagina: POR_PAGINA };
 }
