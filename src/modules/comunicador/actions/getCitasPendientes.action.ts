@@ -49,6 +49,14 @@ export async function getCitasPendientes(filtros: unknown): Promise<{ filas: Cit
     if (f.profesional_id) condiciones.push(Prisma.sql`c.profesional_id = ${f.profesional_id}`);
     if (f.prestacion_id) condiciones.push(Prisma.sql`c.prestacion_id = ${f.prestacion_id}`);
 
+    // RUT: coincidencia parcial, ignorando puntos y guion en ambos lados.
+    if (f.rut) {
+        const fragmentoRut = f.rut.replace(/[.\-\s]/g, "");
+        condiciones.push(Prisma.sql`REPLACE(REPLACE(c.rut_usuario, '.', ''), '-', '') LIKE ${`%${fragmentoRut}%`}`);
+    }
+    // Sector: coincidencia parcial (texto libre).
+    if (f.sector) condiciones.push(Prisma.sql`u.sector LIKE ${`%${f.sector}%`}`);
+
     // Temporalidad (sobre fecha_estimada_atencion)
     const rt = rangoTemporalidad(f.temporalidad ?? "", hoy);
     if (rt?.gte) condiciones.push(Prisma.sql`c.fecha_estimada_atencion >= ${rt.gte}`);
